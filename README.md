@@ -14,8 +14,8 @@ A polished product that lets users create & track countdown events (exams, hacka
 
 ## 📱 Platforms
 
-| Platform                | Status      | Description                                  |
-| ----------------------- | ----------- | -------------------------------------------- |
+| Platform                | Status     | Description                                  |
+| ----------------------- | ---------- | -------------------------------------------- |
 | 🌐 **Web App**          | ✅ Complete | React + PWA with offline support             |
 | 🔌 **Chrome Extension** | ✅ Complete | Manifest V3 with popup and notifications     |
 | 📱 **Android App**      | ✅ Complete | React Native + Expo with local notifications |
@@ -74,8 +74,8 @@ DayCounter/
 ### 1. Clone and Install
 
 ```bash
-git clone https://github.com/yourusername/daycounter.git
-cd daycounter
+git clone https://github.com/PriyankaGowda2005/DayCounter---Cross-platform-Day-Countdown-Tracker.git
+cd DayCounter---Cross-platform-Day-Countdown-Tracker
 npm install
 ```
 
@@ -279,8 +279,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📞 Support
 
 - 📧 Email: support@daycounter.app
-- 🐛 Issues: [GitHub Issues](https://github.com/yourusername/daycounter/issues)
-- 💬 Discussions: [GitHub Discussions](https://github.com/yourusername/daycounter/discussions)
+- 🐛 Issues: [GitHub Issues](https://github.com/PriyankaGowda2005/DayCounter---Cross-platform-Day-Countdown-Tracker/issues)
+- 💬 Discussions: [GitHub Discussions](https://github.com/PriyankaGowda2005/DayCounter---Cross-platform-Day-Countdown-Tracker/discussions)
 
 ---
 
