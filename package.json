@@ -1,0 +1,31 @@
+{
+  "name": "daycounter",
+  "version": "1.0.0",
+  "description": "Cross-platform Day/Countdown Tracker",
+  "private": true,
+  "workspaces": [
+    "web",
+    "extension",
+    "mobile",
+    "shared"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=web",
+    "build": "npm run build --workspaces",
+    "test": "npm run test --workspaces",
+    "lint": "npm run lint --workspaces",
+    "build:web": "npm run build --workspace=web",
+    "build:extension": "npm run build --workspace=extension",
+    "build:mobile": "npm run build --workspace=mobile",
+    "dev:web": "npm run dev --workspace=web",
+    "dev:extension": "npm run dev --workspace=extension",
+    "dev:mobile": "npm run dev --workspace=mobile"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "react-native-web": "~0.19.6"
+  }
+}

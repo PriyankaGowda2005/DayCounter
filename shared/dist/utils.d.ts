@@ -1,0 +1,13 @@
+import { Event, CountdownData, Task, Reminder } from './types';
+export declare const generateId: () => string;
+export declare const createEvent: (data: Partial<Event>) => Event;
+export declare const createTask: (text: string, date: string) => Task;
+export declare const createReminder: (offsetMinutes: number, timeOfDay?: string) => Reminder;
+export declare const calculateCountdown: (targetDate: string, startDate?: string) => CountdownData;
+export declare const formatTimeRemaining: (countdown: CountdownData) => string;
+export declare const getUpcomingEvents: (events: Event[], limit?: number) => Event[];
+export declare const getTodaysEvents: (events: Event[]) => Event[];
+export declare const exportToJSON: (events: Event[]) => string;
+export declare const importFromJSON: (json: string) => Event[];
+export declare const exportToICS: (events: Event[]) => string;
+export declare const parseICS: (icsContent: string) => Event[];

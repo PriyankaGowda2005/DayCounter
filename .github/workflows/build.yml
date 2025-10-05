@@ -1,0 +1,151 @@
+name: Build DayCounter
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-web:
+    name: Build Web App
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build shared package
+        run: |
+          cd shared
+          npm run build
+
+      - name: Build web app
+        run: |
+          cd web
+          npm run build
+
+      - name: Upload web build
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-build
+          path: web/dist/
+
+  build-extension:
+    name: Build Chrome Extension
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build shared package
+        run: |
+          cd shared
+          npm run build
+
+      - name: Build extension
+        run: |
+          cd extension
+          npm run build
+
+      - name: Create extension zip
+        run: |
+          cd extension/dist
+          zip -r ../../daycounter-extension.zip . -x "*.DS_Store" "*.git*"
+
+      - name: Upload extension build
+        uses: actions/upload-artifact@v4
+        with:
+          name: extension-build
+          path: daycounter-extension.zip
+
+  build-mobile:
+    name: Build Mobile App
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Setup Expo CLI
+        run: npm install -g @expo/cli
+
+      - name: Build shared package
+        run: |
+          cd shared
+          npm run build
+
+      - name: Build mobile app
+        run: |
+          cd mobile
+          npm run build
+
+      - name: Upload mobile build
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-build
+          path: mobile/dist/
+
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
+
+      - name: Run linting
+        run: npm run lint
+
+  deploy-preview:
+    name: Deploy Preview
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    needs: [build-web, test]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download web build
+        uses: actions/download-artifact@v4
+        with:
+          name: web-build
+          path: dist/web
+
+      - name: Deploy to preview
+        run: |
+          echo "Deploying to preview environment..."
+          # Add your deployment logic here
+          # For example, deploy to Vercel, Netlify, or your own server

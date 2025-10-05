@@ -1,0 +1,384 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    @apply bg-light-gradient dark:bg-dark-gradient text-primary-900 dark:text-primary-50 antialiased;
+    min-height: 100vh;
+    background-size: 400% 400%;
+    animation: gradientShift 20s ease infinite;
+  }
+
+  * {
+    @apply border-primary-200 dark:border-primary-700;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center px-6 py-3 border border-transparent text-sm font-semibold rounded-lg shadow-netflix focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-200 transform hover:scale-105 active:scale-95;
+  }
+  
+  .btn-primary {
+    @apply btn bg-accent-600 text-white hover:bg-accent-700 focus:ring-accent-500 shadow-netflix-lg hover:shadow-netflix-xl;
+  }
+  
+  .btn-secondary {
+    @apply btn bg-primary-100 dark:bg-primary-800 text-primary-700 dark:text-primary-200 border-primary-300 dark:border-primary-600 hover:bg-primary-200 dark:hover:bg-primary-700 focus:ring-primary-500 shadow-netflix hover:shadow-netflix-lg;
+  }
+  
+  .btn-success {
+    @apply btn bg-success-600 text-white hover:bg-success-700 focus:ring-success-500 shadow-netflix-lg hover:shadow-netflix-xl;
+  }
+
+  .btn-warning {
+    @apply btn bg-warning-600 text-white hover:bg-warning-700 focus:ring-warning-500 shadow-netflix-lg hover:shadow-netflix-xl;
+  }
+  
+  .btn-info {
+    @apply btn bg-info-600 text-white hover:bg-info-700 focus:ring-info-500 shadow-netflix-lg hover:shadow-netflix-xl;
+  }
+
+  .btn-ghost {
+    @apply btn bg-transparent text-primary-500 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-200 hover:bg-primary-100 dark:hover:bg-primary-800 border-0 shadow-none hover:shadow-netflix;
+  }
+
+  .btn-netflix {
+    @apply btn bg-accent-600 text-white hover:bg-accent-700 focus:ring-accent-500 shadow-netflix-lg hover:shadow-netflix-xl animate-pulse-glow;
+  }
+  
+  .card {
+    @apply bg-white dark:bg-primary-800 backdrop-blur-sm rounded-xl shadow-netflix-lg border border-primary-300 dark:border-primary-700 hover:shadow-netflix-xl transition-all duration-300 transform hover:-translate-y-1;
+  }
+  
+  .input {
+    @apply block w-full px-4 py-3 border border-primary-400 dark:border-primary-600 rounded-lg shadow-netflix placeholder-primary-500 dark:placeholder-primary-500 focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent bg-white dark:bg-primary-700 text-primary-900 dark:text-white transition-all duration-200 hover:shadow-netflix-lg focus:shadow-netflix-xl;
+  }
+  
+  .countdown-card {
+    @apply card p-6 hover:shadow-netflix-xl transition-all duration-300 transform hover:-translate-y-2;
+  }
+  
+  .progress-bar {
+    @apply w-full bg-primary-200 dark:bg-primary-700 rounded-full h-3 overflow-hidden shadow-inner;
+  }
+  
+  .progress-fill {
+    @apply bg-gradient-to-r from-accent-500 to-accent-600 h-3 rounded-full transition-all duration-500 ease-out shadow-netflix relative;
+  }
+
+  .progress-fill::after {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer;
+  }
+
+  .glass-effect {
+    @apply bg-white/90 dark:bg-primary-800/90 backdrop-blur-xl border border-primary-200 dark:border-primary-700 shadow-netflix-xl;
+  }
+
+  .gradient-text {
+    @apply bg-gradient-to-r from-accent-500 to-accent-600 bg-clip-text text-transparent;
+  }
+
+  .gradient-text-success {
+    @apply bg-gradient-to-r from-success-500 to-success-600 bg-clip-text text-transparent;
+  }
+
+  .gradient-text-info {
+    @apply bg-gradient-to-r from-info-500 to-info-600 bg-clip-text text-transparent;
+  }
+
+  .floating-animation {
+    animation: float 8s ease-in-out infinite;
+  }
+
+  .floating-animation-delayed {
+    animation: float 8s ease-in-out infinite 2s;
+  }
+
+  .pulse-glow {
+    animation: pulseGlow 3s ease-in-out infinite alternate;
+  }
+
+  .shimmer-effect {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .shimmer-effect::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    animation: shimmer 3s infinite;
+  }
+
+  .hover-lift {
+    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-netflix-xl;
+  }
+
+  .hover-glow {
+    @apply transition-all duration-300 hover:shadow-glow-red;
+  }
+
+  .bounce-in {
+    animation: bounceIn 0.6s ease-out;
+  }
+
+  .scale-in {
+    animation: scaleIn 0.3s ease-out;
+  }
+
+  .fade-in-up {
+    animation: fadeInUp 0.5s ease-out;
+  }
+
+  .fade-in-down {
+    animation: fadeInDown 0.5s ease-out;
+  }
+
+  .slide-in-left {
+    animation: slideLeft 0.4s ease-out;
+  }
+
+  .slide-in-right {
+    animation: slideRight 0.4s ease-out;
+  }
+
+  .wiggle {
+    animation: wiggle 1s ease-in-out infinite;
+  }
+
+  .spin-slow {
+    animation: spin 3s linear infinite;
+  }
+
+  .ping-slow {
+    animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+  }
+
+  .countdown-pulse {
+    animation: countdownPulse 1s ease-in-out infinite;
+  }
+}
+
+@layer utilities {
+  .text-shadow {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+
+  .text-shadow-lg {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  }
+
+  .text-shadow-xl {
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  .text-glow {
+    text-shadow: 0 0 8px currentColor;
+  }
+
+  .backdrop-blur-xs {
+    backdrop-filter: blur(2px);
+  }
+
+  .backdrop-blur-sm {
+    backdrop-filter: blur(4px);
+  }
+
+  .backdrop-blur-md {
+    backdrop-filter: blur(8px);
+  }
+
+  .backdrop-blur-lg {
+    backdrop-filter: blur(12px);
+  }
+
+  .backdrop-blur-xl {
+    backdrop-filter: blur(16px);
+  }
+
+  .backdrop-blur-2xl {
+    backdrop-filter: blur(24px);
+  }
+
+  .backdrop-blur-3xl {
+    backdrop-filter: blur(40px);
+  }
+}
+
+@keyframes gradientShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes pulseGlow {
+  0% {
+    boxShadow: '0 0 5px rgba(239, 68, 68, 0.3)';
+  }
+  100% {
+    boxShadow: '0 0 15px rgba(239, 68, 68, 0.6)';
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  0% {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideRight {
+  0% {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes wiggle {
+  0%, 100% {
+    transform: rotate(-1deg);
+  }
+  50% {
+    transform: rotate(1deg);
+  }
+}
+
+@keyframes countdownPulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-primary-100 dark:bg-primary-800 rounded-full;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gradient-to-b from-accent-500 to-accent-600 rounded-full shadow-netflix;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gradient-to-b from-accent-600 to-accent-700 shadow-glow-red;
+}
+
+/* Selection styling */
+::selection {
+  @apply bg-accent-500/20 text-accent-900 dark:text-accent-100;
+}
+
+/* Focus styles */
+.focus-ring {
+  @apply focus:outline-none focus:ring-2 focus:ring-accent-500 focus:ring-offset-2;
+}
+
+/* Loading states */
+.loading-shimmer {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.dark .loading-shimmer {
+  background: linear-gradient(90deg, #374151 25%, #4b5563 50%, #374151 75%);
+  background-size: 200% 100%;
+}

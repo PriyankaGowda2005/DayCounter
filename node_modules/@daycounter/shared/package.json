@@ -1,0 +1,19 @@
+{
+  "name": "@daycounter/shared",
+  "version": "1.0.0",
+  "description": "Shared utilities, models, and UI tokens for DayCounter",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist"
+  },
+  "devDependencies": {
+    "@types/uuid": "^10.0.0",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "uuid": "^9.0.0"
+  }
+}
