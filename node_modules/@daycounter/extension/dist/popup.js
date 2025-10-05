@@ -9,22 +9,24 @@ document.addEventListener('DOMContentLoaded', () => {
     <div class="popup-container">
       <div class="header">
         <h1>📅 DayCounter</h1>
-        <button id="settings-btn">⚙️</button>
+        <button id="settings-btn" class="settings-btn">⚙️</button>
       </div>
       <div class="content">
-        <div id="main-view">
+        <div id="main-view" class="view-transition">
           <div id="events-list">
-            <p>Loading events...</p>
+            <div class="loading">
+              <div class="spinner"></div>
+            </div>
           </div>
           <div class="actions">
-            <button id="add-event-btn">➕ Add Event</button>
-            <button id="view-all-btn">📋 View All Events</button>
+            <button id="add-event-btn" class="btn btn-primary">➕ Add Event</button>
+            <button id="view-all-btn" class="btn btn-secondary">📋 View All Events</button>
           </div>
         </div>
         
-        <div id="add-event-view" style="display: none;">
+        <div id="add-event-view" style="display: none;" class="view-transition">
           <div class="form-header">
-            <button id="back-btn">← Back</button>
+            <button id="back-btn" class="back-btn">← Back</button>
             <h2>Add New Event</h2>
           </div>
           <form id="event-form">
@@ -62,231 +64,490 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
             
             <div class="form-group">
-              <label>
+              <label class="checkbox-label">
                 <input type="checkbox" id="event-reminders"> Enable reminders
               </label>
             </div>
             
             <div class="form-actions">
-              <button type="button" id="cancel-btn">Cancel</button>
-              <button type="submit" id="save-btn">Save Event</button>
+              <button type="button" id="cancel-btn" class="btn btn-danger">Cancel</button>
+              <button type="submit" id="save-btn" class="btn btn-success">Save Event</button>
             </div>
           </form>
         </div>
         
-        <div id="all-events-view" style="display: none;">
+        <div id="all-events-view" style="display: none;" class="view-transition">
           <div class="form-header">
-            <button id="back-from-all-btn">← Back</button>
+            <button id="back-from-all-btn" class="back-btn">← Back</button>
             <h2>All Events</h2>
           </div>
           <div id="all-events-list">
-            <p>Loading all events...</p>
+            <div class="loading">
+              <div class="spinner"></div>
+            </div>
           </div>
         </div>
       </div>
     </div>
   `
   
-  // Add comprehensive styles
+  // Add Netflix-inspired dark theme styles
   const style = document.createElement('style')
   style.textContent = `
-    .popup-container {
-      width: 400px;
-      height: 600px;
-      font-family: system-ui, sans-serif;
-      background: white;
+    * {
+      box-sizing: border-box;
     }
+    
+    .popup-container {
+      width: 420px;
+      height: 650px;
+      font-family: 'Netflix Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: #141414;
+      color: #ffffff;
+      overflow: hidden;
+      position: relative;
+    }
+    
+    .popup-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(229, 9, 20, 0.05) 0%, rgba(0, 0, 0, 0.1) 100%);
+      pointer-events: none;
+    }
+    
     .header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 16px;
-      border-bottom: 1px solid #e5e7eb;
-      background: #f9fafb;
+      padding: 20px 24px;
+      background: rgba(20, 20, 20, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      position: relative;
+      z-index: 10;
     }
+    
     .header h1 {
       margin: 0;
-      font-size: 18px;
-      font-weight: 600;
+      font-size: 20px;
+      font-weight: 700;
+      color: #e50914;
+      text-shadow: 0 0 10px rgba(229, 9, 20, 0.3);
     }
+    
+    .settings-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 16px;
+      color: #ffffff;
+    }
+    
+    .settings-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(1.1);
+      border-color: #e50914;
+    }
+    
     .content {
-      height: calc(100% - 60px);
+      height: calc(100% - 80px);
       overflow-y: auto;
+      background: #141414;
+      position: relative;
+      z-index: 5;
     }
+    
     .form-header {
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 16px;
-      border-bottom: 1px solid #e5e7eb;
-      background: #f9fafb;
+      gap: 16px;
+      padding: 20px 24px;
+      background: rgba(20, 20, 20, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      position: relative;
+      z-index: 10;
     }
+    
     .form-header h2 {
       margin: 0;
-      font-size: 16px;
+      font-size: 18px;
       font-weight: 600;
+      color: #ffffff;
     }
+    
+    .back-btn {
+      background: #e50914;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(229, 9, 20, 0.3);
+    }
+    
+    .back-btn:hover {
+      background: #f40612;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(229, 9, 20, 0.4);
+    }
+    
     .actions {
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      padding: 16px;
+      gap: 12px;
+      padding: 24px;
     }
-    button {
-      padding: 10px 16px;
-      border: 1px solid #d1d5db;
-      border-radius: 6px;
-      background: #f9fafb;
+    
+    .btn {
+      padding: 14px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
       cursor: pointer;
-      font-size: 14px;
-      transition: all 0.2s;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
-    button:hover {
-      background: #f3f4f6;
-    }
-    #add-event-btn {
-      background: #3b82f6;
+    
+    .btn-primary {
+      background: #e50914;
       color: white;
-      border-color: #3b82f6;
+      box-shadow: 0 4px 15px rgba(229, 9, 20, 0.4);
     }
-    #add-event-btn:hover {
-      background: #2563eb;
+    
+    .btn-primary:hover {
+      background: #f40612;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(229, 9, 20, 0.6);
     }
-    #back-btn, #back-from-all-btn {
-      background: #6b7280;
-      color: white;
-      border-color: #6b7280;
-      padding: 6px 12px;
-      font-size: 12px;
+    
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     }
-    #back-btn:hover, #back-from-all-btn:hover {
-      background: #4b5563;
+    
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
     }
+    
     #event-form {
-      padding: 16px;
+      padding: 24px;
     }
+    
     .form-group {
-      margin-bottom: 16px;
+      margin-bottom: 20px;
     }
+    
     .form-group label {
       display: block;
       font-size: 14px;
-      font-weight: 500;
-      margin-bottom: 6px;
-      color: #374151;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #ffffff;
     }
+    
     .form-group input, .form-group select, .form-group textarea {
       width: 100%;
-      padding: 8px 12px;
-      border: 1px solid #d1d5db;
-      border-radius: 6px;
+      padding: 12px 16px;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
       font-size: 14px;
-      box-sizing: border-box;
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      transition: all 0.3s ease;
+      font-family: inherit;
     }
+    
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+      outline: none;
+      border-color: #e50914;
+      background: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.2);
+    }
+    
+    .form-group input::placeholder, .form-group textarea::placeholder {
+      color: rgba(255, 255, 255, 0.6);
+    }
+    
     .form-group textarea {
-      height: 60px;
+      height: 80px;
       resize: vertical;
     }
+    
     .form-group input[type="checkbox"] {
       width: auto;
-      margin-right: 8px;
+      margin-right: 12px;
+      transform: scale(1.2);
     }
+    
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      font-weight: 500;
+      color: #ffffff;
+    }
+    
     .form-actions {
       display: flex;
-      gap: 12px;
-      margin-top: 24px;
+      gap: 16px;
+      margin-top: 32px;
     }
-    .form-actions button {
+    
+    .form-actions .btn {
       flex: 1;
     }
-    #save-btn {
-      background: #10b981;
+    
+    .btn-success {
+      background: #00d4aa;
       color: white;
-      border-color: #10b981;
+      box-shadow: 0 4px 15px rgba(0, 212, 170, 0.4);
     }
-    #save-btn:hover {
-      background: #059669;
+    
+    .btn-success:hover {
+      background: #00b894;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 212, 170, 0.6);
     }
-    #cancel-btn {
-      background: #ef4444;
+    
+    .btn-danger {
+      background: #e50914;
       color: white;
-      border-color: #ef4444;
+      box-shadow: 0 4px 15px rgba(229, 9, 20, 0.4);
     }
-    #cancel-btn:hover {
-      background: #dc2626;
+    
+    .btn-danger:hover {
+      background: #f40612;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(229, 9, 20, 0.6);
     }
+    
     .event-item {
-      padding: 12px;
-      border: 1px solid #e5e7eb;
-      border-radius: 8px;
-      margin-bottom: 8px;
-      background: white;
+      padding: 20px;
+      border: none;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      border-left: 4px solid #e50914;
     }
+    
+    .event-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+      background: rgba(255, 255, 255, 0.08);
+    }
+    
     .event-item.overdue {
-      border-color: #fecaca;
-      background: #fef2f2;
+      background: rgba(229, 9, 20, 0.1);
+      border-left-color: #e50914;
     }
+    
     .event-item.urgent {
-      border-color: #fde68a;
-      background: #fffbeb;
+      background: rgba(255, 193, 7, 0.1);
+      border-left-color: #ffc107;
     }
+    
     .event-header {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      margin-bottom: 8px;
+      margin-bottom: 12px;
     }
+    
     .event-title {
-      font-weight: 500;
-      font-size: 14px;
-      margin: 0;
-    }
-    .event-days {
-      font-size: 12px;
       font-weight: 600;
-      padding: 4px 8px;
-      border-radius: 12px;
+      font-size: 16px;
+      margin: 0;
+      color: #ffffff;
     }
+    
+    .event-days {
+      font-size: 13px;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
     .event-days.overdue {
-      background: #fef2f2;
-      color: #dc2626;
+      background: #e50914;
+      color: white;
     }
+    
     .event-days.urgent {
-      background: #fef3c7;
-      color: #d97706;
+      background: #ffc107;
+      color: #000000;
     }
+    
     .event-days.normal {
-      background: #f0fdf4;
-      color: #16a34a;
+      background: #00d4aa;
+      color: white;
     }
+    
     .event-details {
-      font-size: 12px;
-      color: #6b7280;
-      margin-bottom: 8px;
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
+    
     .event-actions {
       display: flex;
       gap: 8px;
+      margin-top: 12px;
     }
-    .event-actions button {
-      padding: 4px 8px;
+    
+    .event-actions .btn {
+      padding: 8px 16px;
       font-size: 12px;
+      font-weight: 600;
     }
-    .delete-btn {
-      background: #fef2f2;
-      color: #dc2626;
-      border-color: #fecaca;
-    }
-    .delete-btn:hover {
-      background: #fee2e2;
-    }
+    
     .archive-btn {
-      background: #f3f4f6;
-      color: #6b7280;
-      border-color: #d1d5db;
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
+    
     .archive-btn:hover {
-      background: #e5e7eb;
+      background: rgba(255, 255, 255, 0.2);
+    }
+    
+    .delete-btn {
+      background: #e50914;
+      color: white;
+      border: none;
+    }
+    
+    .delete-btn:hover {
+      background: #f40612;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 40px 24px;
+    }
+    
+    .empty-state-icon {
+      font-size: 64px;
+      margin-bottom: 20px;
+      opacity: 0.7;
+    }
+    
+    .empty-state h3 {
+      margin: 0 0 8px 0;
+      font-size: 18px;
+      font-weight: 600;
+      color: #ffffff;
+    }
+    
+    .empty-state p {
+      margin: 0;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #ffffff;
+      margin-bottom: 16px;
+      padding: 0 24px;
+      padding-top: 24px;
+    }
+    
+    .events-container {
+      padding: 0 24px 24px;
+    }
+    
+    /* Scrollbar styling */
+    .content::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    .content::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    
+    .content::-webkit-scrollbar-thumb {
+      background: rgba(229, 9, 20, 0.5);
+      border-radius: 3px;
+    }
+    
+    .content::-webkit-scrollbar-thumb:hover {
+      background: rgba(229, 9, 20, 0.7);
+    }
+    
+    /* Animation for view transitions */
+    .view-transition {
+      animation: slideIn 0.3s ease-out;
+    }
+    
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    
+    /* Loading animation */
+    .loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px;
+    }
+    
+    .spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid rgba(229, 9, 20, 0.3);
+      border-top: 3px solid #e50914;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
   `
   document.head.appendChild(style)
@@ -419,10 +680,10 @@ async function loadEvents() {
     
     if (events.length === 0) {
       eventsList.innerHTML = `
-        <div style="text-align: center; padding: 20px;">
-          <div style="font-size: 48px; margin-bottom: 16px;">📅</div>
-          <h3 style="margin: 0 0 8px 0; font-size: 16px;">No upcoming events</h3>
-          <p style="margin: 0; color: #6b7280; font-size: 14px;">Create your first countdown event to get started.</p>
+        <div class="empty-state">
+          <div class="empty-state-icon">📅</div>
+          <h3>No upcoming events</h3>
+          <p>Create your first countdown event to get started.</p>
         </div>
       `
     } else {
@@ -433,18 +694,16 @@ async function loadEvents() {
       
       if (upcomingEvents.length === 0) {
         eventsList.innerHTML = `
-          <div style="text-align: center; padding: 20px;">
-            <div style="font-size: 48px; margin-bottom: 16px;">📅</div>
-            <h3 style="margin: 0 0 8px 0; font-size: 16px;">No upcoming events</h3>
-            <p style="margin: 0; color: #6b7280; font-size: 14px;">All events are completed or archived.</p>
+          <div class="empty-state">
+            <div class="empty-state-icon">📅</div>
+            <h3>No upcoming events</h3>
+            <p>All events are completed or archived.</p>
           </div>
         `
       } else {
         eventsList.innerHTML = `
-          <h2 style="font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 12px;">
-            Upcoming Events (${upcomingEvents.length})
-          </h2>
-          <div style="display: flex; flex-direction: column; gap: 12px;">
+          <div class="section-title">Upcoming Events (${upcomingEvents.length})</div>
+          <div class="events-container">
             ${upcomingEvents.map(event => {
               const countdown = calculateCountdown(event.targetAt, event.startAt)
               const icon = getCategoryIcon(event.category)
@@ -486,10 +745,10 @@ async function loadAllEvents() {
     
     if (events.length === 0) {
       allEventsList.innerHTML = `
-        <div style="text-align: center; padding: 20px;">
-          <div style="font-size: 48px; margin-bottom: 16px;">📅</div>
-          <h3 style="margin: 0 0 8px 0; font-size: 16px;">No events yet</h3>
-          <p style="margin: 0; color: #6b7280; font-size: 14px;">Create your first countdown event to get started.</p>
+        <div class="empty-state">
+          <div class="empty-state-icon">📅</div>
+          <h3>No events yet</h3>
+          <p>Create your first countdown event to get started.</p>
         </div>
       `
     } else {
@@ -497,36 +756,32 @@ async function loadAllEvents() {
       const sortedEvents = events.sort((a, b) => new Date(a.targetAt) - new Date(b.targetAt))
       
       allEventsList.innerHTML = `
-        <div style="padding: 16px;">
-          <h2 style="font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 12px;">
-            All Events (${events.length})
-          </h2>
-          <div style="display: flex; flex-direction: column; gap: 8px;">
-            ${sortedEvents.map(event => {
-              const countdown = calculateCountdown(event.targetAt, event.startAt)
-              const icon = getCategoryIcon(event.category)
-              const isArchived = event.isArchived
-              
-              return `
-                <div class="event-item ${isArchived ? 'opacity-50' : ''} ${countdown.isOverdue ? 'overdue' : countdown.days <= 1 ? 'urgent' : ''}">
-                  <div class="event-header">
-                    <h3 class="event-title">${icon} ${event.title} ${isArchived ? '(Archived)' : ''}</h3>
-                    <div class="event-days ${countdown.isOverdue ? 'overdue' : countdown.days <= 1 ? 'urgent' : 'normal'}">
-                      ${countdown.isOverdue ? 'Overdue' : `${countdown.days}d`}
-                    </div>
-                  </div>
-                  <div class="event-details">
-                    🕐 ${formatCountdown(countdown)}
-                  </div>
-                  ${event.description ? `<div class="event-details">${event.description}</div>` : ''}
-                  <div class="event-actions">
-                    ${!isArchived ? `<button class="archive-btn" onclick="archiveEvent('${event.id}')">Archive</button>` : ''}
-                    <button class="delete-btn" onclick="deleteEvent('${event.id}')">Delete</button>
+        <div class="section-title">All Events (${events.length})</div>
+        <div class="events-container">
+          ${sortedEvents.map(event => {
+            const countdown = calculateCountdown(event.targetAt, event.startAt)
+            const icon = getCategoryIcon(event.category)
+            const isArchived = event.isArchived
+            
+            return `
+              <div class="event-item ${isArchived ? 'opacity-50' : ''} ${countdown.isOverdue ? 'overdue' : countdown.days <= 1 ? 'urgent' : ''}">
+                <div class="event-header">
+                  <h3 class="event-title">${icon} ${event.title} ${isArchived ? '(Archived)' : ''}</h3>
+                  <div class="event-days ${countdown.isOverdue ? 'overdue' : countdown.days <= 1 ? 'urgent' : 'normal'}">
+                    ${countdown.isOverdue ? 'Overdue' : `${countdown.days}d`}
                   </div>
                 </div>
-              `
-            }).join('')}
-          </div>
+                <div class="event-details">
+                  🕐 ${formatCountdown(countdown)}
+                </div>
+                ${event.description ? `<div class="event-details">${event.description}</div>` : ''}
+                <div class="event-actions">
+                  ${!isArchived ? `<button class="btn archive-btn" onclick="archiveEvent('${event.id}')">Archive</button>` : ''}
+                  <button class="btn delete-btn" onclick="deleteEvent('${event.id}')">Delete</button>
+                </div>
+              </div>
+            `
+          }).join('')}
         </div>
       `
     }
