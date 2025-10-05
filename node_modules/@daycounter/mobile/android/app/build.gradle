@@ -81,9 +81,9 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace "com.daycounter"
+    namespace "com.daycounter.app"
     defaultConfig {
-        applicationId "com.daycounter"
+        applicationId "com.daycounter.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

@@ -1,2 +1,196 @@
-import{c}from"./utils.js";chrome.runtime.onInstalled.addListener(()=>{console.log("DayCounter extension installed"),chrome.notifications.getPermissionLevel(e=>{e==="denied"&&console.log("Notifications denied by user")})});chrome.alarms.onAlarm.addListener(e=>{e.name.startsWith("reminder-")?m(e):e.name==="daily-summary"&&l()});async function m(e){try{const n=e.name.replace("reminder-",""),i=((await chrome.storage.local.get(["events"])).events||[]).find(t=>t.id===n);if(!i)return;const a=c(i.targetAt,i.startAt);chrome.notifications.create({type:"basic",iconUrl:"icons/icon-48.png",title:"DayCounter Reminder",message:`${i.title} - ${a.isOverdue?"Overdue!":`${a.days} days remaining`}`,buttons:[{title:"View Details"}]})}catch(n){console.error("Error handling reminder alarm:",n)}}async function l(){try{const e=await chrome.storage.local.get(["events","dailySummaryTime"]),n=e.events||[],o=e.dailySummaryTime||"09:00",r=new Date,i=n.filter(t=>new Date(t.targetAt).toDateString()===r.toDateString()&&!t.isArchived),a=n.filter(t=>new Date(t.targetAt)>r&&!t.isArchived).slice(0,3);if(i.length>0||a.length>0){let t="";i.length>0&&(t+=`Today: ${i.length} event${i.length>1?"s":""}`),a.length>0&&(t&&(t+=`
-`),t+=`Upcoming: ${a.map(s=>s.title).join(", ")}`),chrome.notifications.create({type:"basic",iconUrl:"icons/icon-48.png",title:"DayCounter Daily Summary",message:t,buttons:[{title:"View All Events"}]})}}catch(e){console.error("Error handling daily summary alarm:",e)}}chrome.notifications.onClicked.addListener(e=>{chrome.tabs.create({url:"https://daycounter.app"})});chrome.notifications.onButtonClicked.addListener((e,n)=>{chrome.tabs.create({url:"https://daycounter.app"})});async function d(e){try{(await chrome.alarms.getAll()).forEach(o=>{o.name.startsWith(`reminder-${e.id}`)&&chrome.alarms.clear(o.name)});for(const o of e.reminders){const r=new Date(e.targetAt);r.setMinutes(r.getMinutes()+o.offsetMinutesFromTarget),r>new Date&&chrome.alarms.create(`reminder-${e.id}-${o.id}`,{when:r.getTime()})}}catch(n){console.error("Error scheduling reminders:",n)}}chrome.storage.onChanged.addListener((e,n)=>{n==="local"&&e.events&&(e.events.newValue||[]).forEach(r=>{r.isArchived||d(r)})});chrome.commands.onCommand.addListener(e=>{e==="open-popup"&&chrome.action.openPopup()});
+// Background service worker for Chrome extension
+
+// Initialize extension
+chrome.runtime.onInstalled.addListener(() => {
+  console.log('DayCounter extension installed')
+  
+  // Request notification permission
+  chrome.notifications.getPermissionLevel((level) => {
+    if (level === 'denied') {
+      console.log('Notifications denied by user')
+    }
+  })
+})
+
+// Handle alarm events for notifications
+chrome.alarms.onAlarm.addListener((alarm) => {
+  if (alarm.name.startsWith('reminder-')) {
+    handleReminderAlarm(alarm)
+  } else if (alarm.name === 'daily-summary') {
+    handleDailySummaryAlarm()
+  }
+})
+
+// Calculate countdown days
+function calculateCountdown(targetDate, startDate) {
+  const target = new Date(targetDate)
+  const start = new Date(startDate)
+  const now = new Date()
+  
+  const diffTime = target.getTime() - now.getTime()
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+  
+  return {
+    days: diffDays,
+    isOverdue: diffDays < 0
+  }
+}
+
+// Handle reminder notifications
+async function handleReminderAlarm(alarm) {
+  try {
+    const eventId = alarm.name.replace('reminder-', '')
+    const result = await chrome.storage.local.get(['events'])
+    const events = result.events || []
+    
+    const event = events.find(e => e.id === eventId)
+    if (!event) return
+
+    const countdown = calculateCountdown(event.targetAt, event.startAt)
+    
+    chrome.notifications.create({
+      type: 'basic',
+      iconUrl: 'icons/icon-48.png',
+      title: 'DayCounter Reminder',
+      message: `${event.title} - ${countdown.isOverdue ? 'Overdue!' : `${countdown.days} days remaining`}`,
+      buttons: [
+        { title: 'View Details' }
+      ]
+    })
+  } catch (error) {
+    console.error('Error handling reminder alarm:', error)
+  }
+}
+
+// Handle daily summary notifications
+async function handleDailySummaryAlarm() {
+  try {
+    const result = await chrome.storage.local.get(['events', 'dailySummaryTime'])
+    const events = result.events || []
+    const dailySummaryTime = result.dailySummaryTime || '09:00'
+    
+    const today = new Date()
+    const todayEvents = events.filter(event => {
+      const eventDate = new Date(event.targetAt)
+      return eventDate.toDateString() === today.toDateString() && !event.isArchived
+    })
+    
+    const upcomingEvents = events.filter(event => {
+      const eventDate = new Date(event.targetAt)
+      return eventDate > today && !event.isArchived
+    }).slice(0, 3)
+
+    if (todayEvents.length > 0 || upcomingEvents.length > 0) {
+      let message = ''
+      
+      if (todayEvents.length > 0) {
+        message += `Today: ${todayEvents.length} event${todayEvents.length > 1 ? 's' : ''}`
+      }
+      
+      if (upcomingEvents.length > 0) {
+        if (message) message += '\n'
+        message += `Upcoming: ${upcomingEvents.map(e => e.title).join(', ')}`
+      }
+
+      chrome.notifications.create({
+        type: 'basic',
+        iconUrl: 'icons/icon-48.png',
+        title: 'DayCounter Daily Summary',
+        message: message,
+        buttons: [
+          { title: 'View All Events' }
+        ]
+      })
+    }
+  } catch (error) {
+    console.error('Error handling daily summary alarm:', error)
+  }
+}
+
+// Handle notification clicks
+chrome.notifications.onClicked.addListener((notificationId) => {
+  chrome.tabs.create({ url: 'https://daycounter.app' })
+})
+
+chrome.notifications.onButtonClicked.addListener((notificationId, buttonIndex) => {
+  chrome.tabs.create({ url: 'https://daycounter.app' })
+})
+
+// Schedule reminders for events
+async function scheduleEventReminders(event) {
+  try {
+    // Clear existing alarms for this event
+    const alarms = await chrome.alarms.getAll()
+    alarms.forEach(alarm => {
+      if (alarm.name.startsWith(`reminder-${event.id}`)) {
+        chrome.alarms.clear(alarm.name)
+      }
+    })
+
+    // Schedule new reminders
+    for (const reminder of event.reminders) {
+      const reminderTime = new Date(event.targetAt)
+      reminderTime.setMinutes(reminderTime.getMinutes() + reminder.offsetMinutesFromTarget)
+      
+      if (reminderTime > new Date()) {
+        chrome.alarms.create(`reminder-${event.id}-${reminder.id}`, {
+          when: reminderTime.getTime()
+        })
+      }
+    }
+  } catch (error) {
+    console.error('Error scheduling reminders:', error)
+  }
+}
+
+// Schedule daily summary
+async function scheduleDailySummary(time) {
+  try {
+    // Clear existing daily summary alarm
+    chrome.alarms.clear('daily-summary')
+    
+    // Parse time (format: "HH:MM")
+    const [hours, minutes] = time.split(':').map(Number)
+    
+    // Calculate next occurrence
+    const now = new Date()
+    const nextSummary = new Date()
+    nextSummary.setHours(hours, minutes, 0, 0)
+    
+    // If time has passed today, schedule for tomorrow
+    if (nextSummary <= now) {
+      nextSummary.setDate(nextSummary.getDate() + 1)
+    }
+    
+    chrome.alarms.create('daily-summary', {
+      when: nextSummary.getTime(),
+      periodInMinutes: 24 * 60 // Repeat daily
+    })
+    
+    // Save the time preference
+    await chrome.storage.local.set({ dailySummaryTime: time })
+  } catch (error) {
+    console.error('Error scheduling daily summary:', error)
+  }
+}
+
+// Listen for storage changes to update alarms
+chrome.storage.onChanged.addListener((changes, namespace) => {
+  if (namespace === 'local' && changes.events) {
+    const events = changes.events.newValue || []
+    
+    // Schedule reminders for all events
+    events.forEach(event => {
+      if (!event.isArchived) {
+        scheduleEventReminders(event)
+      }
+    })
+  }
+})
+
+// Handle commands
+chrome.commands.onCommand.addListener((command) => {
+  if (command === 'open-popup') {
+    chrome.action.openPopup()
+  }
+})
